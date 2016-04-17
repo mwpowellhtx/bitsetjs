@@ -30,7 +30,11 @@
             return x.reset !== undefined;
         }, "verified has BitSet.prototype.reset");
 
-        verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
+        verifyThatBitSetCorrect(undefined, undefined, true, function (x) {
+            return x.flip !== undefined;
+        }, "verified has BitSet.prototype.flip");
+
+        verifyThatBitSetCorrect(undefined, undefined, true, function (x) {
             return x.isZero !== undefined;
         }, "verified has BitSet.prototype.isZero");
 
@@ -97,6 +101,13 @@
             x.reset(27);
             return !x.test(27);
         }, "verify that bitset set and reset idx 27");
+
+        verifyThatBitSetCorrect(undefined, undefined, true, function (x) {
+            var set = x.set(27).test(27);
+            var flipped = !x.flip(27).test(27);
+            var reflipped = x.flip(27).test(27);
+            return set && flipped && reflipped;
+        }, "verify that bitset set and flip and re-flip idx 27");
 
         // TODO: TBD: true "sameness" would be better, but this is not until ECMAScript version 6 ("Object.is")
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
