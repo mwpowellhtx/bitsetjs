@@ -24,25 +24,18 @@ var BitSet = function (l, d) {
 
     init(this._data, d, l);
 
-    this.set = function(idx, x) {
+    var apply = function(bs, idx, x) {
 
-        /* make sure we have a reasonable value for x */
-        if (x === 1 || x === 0) {
-            x = [x];
-        } else if (x === undefined) {
-            x = [1];
-        }
-
-        var sz = this._sz;
+        var sz = bs._sz;
 
         /* then grow the data to accommodate the request this is a mutable request */
-        this.grow(Math.floor((idx + x.length) / sz) + 1);
+        bs.grow(Math.floor((idx + x.length) / sz) + 1);
 
         /* ReSharper disable once DeclarationHides */
-        var d = this._data;
+        var d = bs._data;
 
         /* ReSharper disable once DeclarationHides */
-        /* finally iterate the values for x and set (or unset) each one in position */
+        /* finally iterate the values for x and set (or reset) each one in position */
         for (var i = 0; i < x.length; i++) {
 
             /* calculate what the pos and j within pos should be */
@@ -57,10 +50,22 @@ var BitSet = function (l, d) {
             }
         }
 
-        return this;
+        return bs;
     }
 
-    this.unset = function(idx, x) {
+    this.set = function (idx, x) {
+
+        /* make sure we have a reasonable value for x */
+        if (x === 1 || x === 0) {
+            x = [x];
+        } else if (x === undefined) {
+            x = [1];
+        }
+
+        return apply(this, idx, x);
+    }
+
+    this.reset = function(idx, x) {
 
         /* either an array of bit positions at a time */
         if (Array.isArray(x)) {
@@ -75,7 +80,11 @@ var BitSet = function (l, d) {
         }
 
         /* conversely to set we are always clearing the bits in this case */
-        return this.set(idx, x);
+        return apply(this, idx, x);
+    }
+
+    this.flip = function(idx) {
+        return this.set(idx, this.test(idx) ? 0 : 1);
     }
 
     this.isZero = function() {
@@ -103,7 +112,7 @@ var BitSet = function (l, d) {
     }
 
     // TODO: TBD: at(idx, count)? at(idx, mask)?
-    this.at = function(idx) {
+    this.test = function(idx) {
         /* ReSharper disable once DeclarationHides */
         var d = this._data;
         /* ReSharper disable once DeclarationHides */
@@ -163,7 +172,7 @@ var BitSet = function (l, d) {
             var x = 0;
             for (var i = result.length * w; i < (result.length + 1) * w; i++) {
                 /* leverage the at function since we know that works */
-                if (bs.at(i)) {
+                if (bs.test(i)) {
                     x |= 1 << i;
                 }
             }
@@ -222,6 +231,20 @@ var BitSet = function (l, d) {
     this.bitCount = function() {
         /* TODO: TBD: so far, to the nearest "word" boundary; may make sense to introduce an actual _length, which could fall within the data. */
         return this._data.length * this._sz;
+    }
+
+    this.count = function(q) {
+        /* ReSharper disable once DeclarationHides */
+        var d = this._data;
+        var sz = this._sz;
+        q = q || function(x) { return x; };
+        var result = 0;
+        for (var i = 0; i < d.length * sz; i++) {
+            if (q(this.test(i))) {
+                result++;
+            }
+        }
+        return result;
     }
 }
 

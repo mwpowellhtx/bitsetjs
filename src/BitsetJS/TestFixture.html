@@ -27,8 +27,8 @@
         }, "verified has BitSet.prototype.set");
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
-            return x.unset !== undefined;
-        }, "verified has BitSet.prototype.unset");
+            return x.reset !== undefined;
+        }, "verified has BitSet.prototype.reset");
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             return x.isZero !== undefined;
@@ -39,8 +39,8 @@
         }, "verified has BitSet.prototype.grow");
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
-            return x.at !== undefined;
-        }, "verified has BitSet.prototype.at");
+            return x.test !== undefined;
+        }, "verified has BitSet.prototype.test");
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             return x.not !== undefined;
@@ -78,6 +78,10 @@
             return x.bitCount !== undefined;
         }, "verified has BitSet.prototype.bitCount");
 
+        verifyThatBitSetCorrect(undefined, undefined, true, function (x) {
+            return x.count !== undefined;
+        }, "verified has BitSet.prototype.count");
+
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             x.grow(1043);
             return x._data.length === 33;
@@ -85,14 +89,14 @@
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             x.set(27);
-            return x.at(27);
+            return x.test(27);
         }, "verify that bitset set idx 27");
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             x.set(27);
-            x.unset(27);
-            return !x.at(27);
-        }, "verify that bitset set and unset idx 27");
+            x.reset(27);
+            return !x.test(27);
+        }, "verify that bitset set and reset idx 27");
 
         // TODO: TBD: true "sameness" would be better, but this is not until ECMAScript version 6 ("Object.is")
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
@@ -170,6 +174,14 @@
             var expected = "70000000100000002000000030000000";
             return actual === expected;
         }, "verifies BitSet.toHexString");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function (x) {
+            return x.count() === 7;
+        }, "verifies count of true bits");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function (x) {
+            return x.count(function(b) { return !b; }) === (x._data.length * x._sz - 7);
+        }, "verifies count of false bits");
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             var allSet = new BitSet(BitSet.getDefaultPosCount(), [~0, ~0, ~0, ~0]);
