@@ -3,18 +3,18 @@
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>Kingdom.BitsetJS</id>
     <title>Kingdom.BitsetJS</title>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <authors>Michael W. Powell</authors>
     <owners>mwpowellhtx</owners>
     <licenseUrl>http://github.com/mwpowellhtx/Kingdom.BitsetJS/raw/master/LICENSE.txt</licenseUrl>
     <projectUrl>http://github.com/mwpowellhtx/Kingdom.BitsetJS</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Provides bitset functionality analog to CSharp BitArray, C++ std::bitset, or even Boost.Bitset.</description>
-    <tags>JavaScript BitSet set unset isZero grow at not and or xor fromString</tags>
+    <description>Provides bitset functionality analog to CSharp BitArray, C++ std::bitset, or even boost::dynamic_bitset.</description>
+    <tags>JavaScript BitSet set unset isZero grow at test any all not and or xor toByteArray toHexString toBooleanArray equals fromString</tags>
     <language>en-US</language>
   </metadata>
   <files>
-    <file src="bin\Scripts\BitsetJS\bitset.js" target="Content\Scripts\BitSetJS\bitset-1.1.0.js" />
+    <file src="bin\Scripts\BitsetJS\bitset.js" target="Content\Scripts\BitSetJS\bitset-1.2.0.js" />
     <file src="bin\Tools\*.ps1" target="tools" />
   </files>
 </package>

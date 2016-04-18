@@ -124,6 +124,31 @@ var BitSet = function (l, d) {
         return (bit >> sh) === 1;
     }
 
+    this.any = function(p) {
+        p = p || function (x) { return x; };
+        var bits = this.toBooleanArray();
+        for (var i = 0; i < bits.length; i++) {
+            /* if the predicate then we did have one so true for any */
+            if (p(bits[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    this.all = function(p) {
+        /* all is like saying none, depending on the condition given in q */
+        p = p || function(x) { return x; };
+        var bits = this.toBooleanArray();
+        for (var i = 0; i < bits.length; i++) {
+            /* if not the predicate then we did no have one so false for all */
+            if (!p(bits[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     this.not = function() {
         /* ReSharper disable once DeclarationHides */
         var d = this._data;
