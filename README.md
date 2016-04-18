@@ -14,7 +14,7 @@ I also wanted for a BitSet to exhibit immutable characteristics, especially when
 
 I may accomplish feature parity, but for the moment this is a good start, and will continue to work on it until I am satisfied. Contributors are always welcome as well if you find it useful.
 
-I believe I accomplished immutability but with a couple of interesting language runtime limitations. Specifically having to do with the fact that in JavaScript everything is held as a reference. I mean, ***everyting***.
+I believe I accomplished immutability but with a couple of interesting language runtime limitations. Specifically having to do with the fact that in JavaScript everything is held as a reference. I mean, ***everything***.
 
 * So for things like default values, I must use factory methods and return the interesting details.
 * Also, any data or lengths and such contributing to new instances must be serialized and deserialized via [JSON.stringify](http://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) followed by [JSON.parse](http://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse). Not the most graceful solution, but probably the best we can do.
