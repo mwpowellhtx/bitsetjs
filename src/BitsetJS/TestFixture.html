@@ -71,6 +71,14 @@
         }, "verified has BitSet.prototype.xor");
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
+            return x.shiftLeft !== undefined;
+        }, "verified has BitSet.prototype.shiftLeft");
+
+        verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
+            return x.shiftRight !== undefined;
+        }, "verified has BitSet.prototype.shiftRight");
+
+        verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             return x.toByteArray !== undefined;
         }, "verified has BitSet.prototype.toByteArray");
 
@@ -215,8 +223,74 @@
         }, "verifies all true bits");
 
         verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
-            return !x.all(function(b) { return !b; });
-        }, "verifies all true bits");
+            var shifted = x.shiftLeft(1, false);
+            var arr = shifted.toByteArray();
+            var expected = [
+                // [0]
+                14, 0, 0, 0,
+                // [1]
+                2, 0, 0, 0,
+                // [2]
+                4, 0, 0, 0,
+                // [3]
+                6, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shifted bits by 1 position(s) with no overflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var shifted = x.shiftLeft(3, false);
+            var arr = shifted.toByteArray();
+            var expected = [
+                // [0]
+                56, 0, 0, 0,
+                // [1]
+                8, 0, 0, 0,
+                // [2]
+                16, 0, 0, 0,
+                // [3]
+                24, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shifted bits by 3 position(s) with no overflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var shifted = x.shiftLeft(16, false);
+            var arr = shifted.toByteArray();
+            var expected = [
+                // [0]
+                0, 0, 7, 0,
+                // [1]
+                0, 0, 1, 0,
+                // [2]
+                0, 0, 2, 0,
+                // [3]
+                0, 0, 3, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shifted bits by 16 position(s) with no overflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var shifted = x.shiftLeft(16, true);
+            var arr = shifted.toByteArray();
+            var expected = [
+                // [0]
+                0, 0, 7, 0,
+                // [1]
+                0, 0, 1, 0,
+                // [2]
+                0, 0, 2, 0,
+                // [3]
+                0, 0, 3, 0,
+                // [4]
+                0, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shifted bits by 16 position(s) with overflow");
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             var allSet = new BitSet(BitSet.getDefaultPosCount(), [~0, ~0, ~0, ~0]);
