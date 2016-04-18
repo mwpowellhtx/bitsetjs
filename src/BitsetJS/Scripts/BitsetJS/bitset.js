@@ -4,6 +4,11 @@ var BitSet = function (l, d) {
     this._sz = BitSet.getBitsPerPos();
     this._data = BitSet.getDefaultData();
 
+    /* only define this functionality once, also no need to look outside this scope */
+    var isNumeric = function(x) {
+        return !isNaN(parseFloat(x)) && isFinite(x);
+    }
+
     /* along same lines as comment below; we need to jump through these hoops in order to avoid
     passing references along at all costs. we also defer to factory methods instead of static
     members, per se, because static variables still count as references, believe it or not */
@@ -74,7 +79,7 @@ var BitSet = function (l, d) {
                 temp.push(0);
             }
             x = temp;
-        } else if (x === undefined || (!isNaN(parseFloat(x)) && isFinite(x))) {
+        } else if (x === undefined || isNumeric(x)) {
             /* or one at a time defaulting to 0 */
             x = [0];
         }
@@ -102,12 +107,31 @@ var BitSet = function (l, d) {
     }
 
     /* ReSharper disable once DeclarationHides */
-    this.grow = function (count) {
+    this.grow = function(count) {
+
         var sz = this._sz;
         var delta = Math.floor(count / sz) - this._data.length + 1;
+
         while (delta-- > 0) {
             this._data = this._data.concat([0]);
         }
+
+        return this;
+    }
+
+    this.shrink = function(n) {
+
+        /* ReSharper disable once DeclarationHides */
+        var d = this._data;
+
+        if (n === undefined) {
+            while (d[d.length - 1] === 0) {
+                d.splice(d.length - 1, 1);
+            }
+        } else if (isNumeric(n)) {
+            d.splice(d.length - n, n);
+        }
+
         return this;
     }
 
@@ -189,16 +213,66 @@ var BitSet = function (l, d) {
         });
     }
 
+    this.shiftLeft = function(n, allowOverflow) {
+
+        n = Math.abs(n || 1);
+        allowOverflow = typeof allowOverflow !== "boolean" ? true : allowOverflow;
+
+        var result = new BitSet(this._data.length, this._data);
+
+        var length = result._data.length;
+
+        /* we want to pull the from the right to the left so to speak */
+        for (var i = result._data.length * result._sz - 1; i >= 0; i--) {
+            var j = i + n;
+            var x = result.test(i);
+            result.set(j, x ? 1 : 0);
+        }
+
+        /* then reset the bits from which we shifted */
+        for (var k = 0; k < n; k++) {
+            result.reset(k);
+        }
+
+        /* last but not least handle any overflow shrinkage that may be necessary */
+        return allowOverflow === true ? result : result.shrink(result._data.length - length);
+    }
+
+    this.shiftRight = function(n, canShrink) {
+
+        n = Math.abs(n || 1);
+        canShrink = typeof canShrink !== "boolean" ? true : canShrink;
+
+        var result = new BitSet(this._data.length, this._data);
+        var base = result._data.length * result._sz;
+
+        /* we want to pull the from the left to the right so to speak */
+        for (var i = n; i < base; i++) {
+            var j = i - n;
+            var x = result.test(i);
+            result.set(j, x ? 1 : 0);
+        }
+
+        /* then reset the bits from which we shifted */
+        for (var k = 1; k <= n; k++) {
+            result.reset(base - k);
+        }
+
+        /* last but not least handle any shrinkage that may be necessary */
+        return canShrink === true ? result.shrink() : result;
+    }
+
     /* ReSharper disable once DeclarationHides */
     var toWidthArray = function(bs, w) {
         var result = [];
         /* TODO: TBD: may be appropriate to clue in on an actual length other than the data length */
-        while (result.length < (bs._data.length * bs._sz / w)) {
+        var width = bs._data.length * bs._sz;
+        for (var i = 0; i < width; i += w) {
             var x = 0;
-            for (var i = result.length * w; i < (result.length + 1) * w; i++) {
+            for (var j = 0; j < w; j++) {
                 /* leverage the at function since we know that works */
-                if (bs.test(i)) {
-                    x |= 1 << i;
+                if (bs.test(result.length * w + j)) {
+                    x |= 1 << j;
                 }
             }
             result.push(x);

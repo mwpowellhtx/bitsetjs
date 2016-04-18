@@ -50,7 +50,7 @@
             return x.any !== undefined;
         }, "verified has BitSet.prototype.any");
 
-        verifyThatBitSetCorrect(undefined, undefined, true, function (x) {
+        verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             return x.all !== undefined;
         }, "verified has BitSet.prototype.all");
 
@@ -69,6 +69,14 @@
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             return x.xor !== undefined;
         }, "verified has BitSet.prototype.xor");
+
+        verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
+            return x.shiftLeft !== undefined;
+        }, "verified has BitSet.prototype.shiftLeft");
+
+        verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
+            return x.shiftRight !== undefined;
+        }, "verified has BitSet.prototype.shiftRight");
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             return x.toByteArray !== undefined;
@@ -215,8 +223,183 @@
         }, "verifies all true bits");
 
         verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
-            return !x.all(function(b) { return !b; });
-        }, "verifies all true bits");
+            var shifted = x.shiftLeft(1, false);
+            var arr = shifted.toByteArray();
+            var expected = [
+                // [0]
+                14, 0, 0, 0,
+                // [1]
+                2, 0, 0, 0,
+                // [2]
+                4, 0, 0, 0,
+                // [3]
+                6, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shifted bits by 1 position(s) with no overflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var shifted = x.shiftLeft(3, false);
+            var arr = shifted.toByteArray();
+            var expected = [
+                // [0]
+                56, 0, 0, 0,
+                // [1]
+                8, 0, 0, 0,
+                // [2]
+                16, 0, 0, 0,
+                // [3]
+                24, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shifted bits by 3 position(s) with no overflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var shifted = x.shiftLeft(16, false);
+            var arr = shifted.toByteArray();
+            var expected = [
+                // [0]
+                0, 0, 7, 0,
+                // [1]
+                0, 0, 1, 0,
+                // [2]
+                0, 0, 2, 0,
+                // [3]
+                0, 0, 3, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shifted bits by 16 position(s) with no overflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var shifted = x.shiftLeft(16, true);
+            var arr = shifted.toByteArray();
+            var expected = [
+                // [0]
+                0, 0, 7, 0,
+                // [1]
+                0, 0, 1, 0,
+                // [2]
+                0, 0, 2, 0,
+                // [3]
+                0, 0, 3, 0,
+                // [4]
+                0, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shifted bits by 16 position(s) with overflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var shifted = x.shiftLeft(1, false).shiftRight(1, false);
+            var arr = shifted.toByteArray();
+            var expected = [
+                // [0]
+                7, 0, 0, 0,
+                // [1]
+                1, 0, 0, 0,
+                // [2]
+                2, 0, 0, 0,
+                // [3]
+                3, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shift 1 followed by right shift 1 without overflow and underflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var shifted = x.shiftLeft(3, false).shiftRight(3, false);
+            var arr = shifted.toByteArray();
+            var expected = [
+                // [0]
+                7, 0, 0, 0,
+                // [1]
+                1, 0, 0, 0,
+                // [2]
+                2, 0, 0, 0,
+                // [3]
+                3, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shift 3 followed by right shift 3 without overflow and underflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var shifted = x.shiftLeft(6, false).shiftRight(3, false);
+            var arr = shifted.toByteArray();
+            var expected = [
+                // [0]
+                56, 0, 0, 0,
+                // [1]
+                8, 0, 0, 0,
+                // [2]
+                16, 0, 0, 0,
+                // [3]
+                24, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shift 6 followed by right shift 3 without overflow and underflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var left = x.shiftLeft(36);
+            var right = left.shiftRight(33, false);
+            var arr = right.toByteArray();
+            var expected = [
+                // [0]
+                56, 0, 0, 0,
+                // [1]
+                8, 0, 0, 0,
+                // [2]
+                16, 0, 0, 0,
+                // [3]
+                24, 0, 0, 0,
+                // [4]
+                0, 0, 0, 0,
+                // [5]
+                0, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shift 36 followed by right shift 33 with overflow and without underflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var left = x.shiftLeft(36);
+            var right = left.shiftRight(33);
+            var arr = right.toByteArray();
+            var expected = [
+                // [0]
+                56, 0, 0, 0,
+                // [1]
+                8, 0, 0, 0,
+                // [2]
+                16, 0, 0, 0,
+                // [3]
+                24, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shift 36 followed by right shift 33 with overflow and underflow");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var left = x.shiftLeft(32, false);
+            var right = left.shiftRight(32, false);
+            var arr = right.toByteArray();
+            var expected = [
+                // [0]
+                7, 0, 0, 0,
+                // [1]
+                1, 0, 0, 0,
+                // [2]
+                2, 0, 0, 0,
+                // [3]
+                0, 0, 0, 0
+            ];
+            return arr.length === expected.length
+                && arr.every(function(a, i) { return a === expected[i]; });
+        }, "verifies left shift 32 followed by right shift 32 without overflow and underflow");
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             var allSet = new BitSet(BitSet.getDefaultPosCount(), [~0, ~0, ~0, ~0]);
