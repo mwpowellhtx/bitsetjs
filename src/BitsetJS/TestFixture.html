@@ -198,7 +198,7 @@
 
         verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
             var actual = x.toHexString();
-            var expected = "70000000100000002000000030000000";
+            var expected = "00000003000000020000000100000007";
             return actual === expected;
         }, "verifies BitSet.toHexString");
 
@@ -405,6 +405,29 @@
             var allSet = new BitSet(BitSet.getDefaultPosCount(), [~0, ~0, ~0, ~0]);
             return x.not().equals(allSet);
         }, "verify that not returns the correct value");
+
+
+        verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
+            return undefined === BitSet.fromString("", 3);
+        }, "verify that from string invalid base returns undefined");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            /* remember we are testing 32 bits per item binary (base 2) */
+            var from = BitSet.fromString(
+                "00000000000000000000000000000011"
+                + "00000000000000000000000000000010"
+                + "00000000000000000000000000000001"
+                + "00000000000000000000000000000111");
+            return from.equals(x);
+        }, "verify binary from string result");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            /* remember we are testing 32 bits per item hex (base 16) */
+            var from = BitSet.fromString(
+                "00000003" + "00000002"
+                + "00000001" + "00000007", 16);
+            return from.equals(x);
+        }, "verify hex from string result");
 
     </script>
 

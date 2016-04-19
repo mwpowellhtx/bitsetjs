@@ -289,7 +289,8 @@ var BitSet = function (l, d) {
         var hex = "0123456789ABCDEF";
         /* remember that a hex string represents every nibble or four bits */
         toWidthArray(this, 4).every(function(x) {
-            result += hex[x];
+            /* reverse the result since we want it in msb order */
+            result = hex[x] + result;
             return true;
         });
         return result;
@@ -373,9 +374,19 @@ BitSet.fromString = function(s, base) {
 
     base = base || 2;
 
+    var isPowerOfTwo = function(x) {
+        return (x === 0) || !(x & (x - 1));
+    }
+
+    /* ReSharper disable once ConditionIsAlwaysConst */
+    if (base === 0 || !isPowerOfTwo(base)) {
+        /* TODO: TBD: return undefined for now... or throw error? */
+        return undefined;
+    }
+
     /* bits specified in MSB order to be reversed and iterated in LSB order */
     var masks = {
-        "0": [],
+        "0": [0],
         "1": [1],
         "2": [1, 0],
         "3": [1, 1],
@@ -392,40 +403,35 @@ BitSet.fromString = function(s, base) {
         "e": [1, 1, 1, 0],
         "f": [1, 1, 1, 1],
         get: function(k) {
-            return this[(k || "").toLowerCase()] || [];
+            k = (k || "").toLowerCase();
+            /* make sure that the width agrees with the base */
+            if (this[k] !== undefined) {
+                while (Math.pow(2, this[k].length) < base) {
+                    this[k] = [0].concat(this[k]);
+                }
+            }
+            return this[k];
         }
     };
 
-    var sz = this._sz;
+    var result = new BitSet();
+    var idx = 0;
 
-    var data = [];
     s = s || "";
 
-    for (var i = 0; i < s.length; i++) {
+    /* must iterate from the back (msb) of the string to the front (lsb) */
+    for (var i = s.length - 1; i >= 0; i--) {
 
         var mask = masks.get(s[i]).reverse();
 
         /* there is nothing to process when any of these is the case */
-        if (mask === undefined || mask === null || mask.length > 0) {
+        if (mask === undefined || mask === null || mask.length === 0) {
             continue;
         }
 
-        /* how many bits have been processed thus far */
-        var ibase = i * base;
-
-        for (var j = 0; j < mask.length; j++) {
-
-            var pos = ibase % sz;
-
-            if (data.length <= pos) {
-                data = data.concat([0]);
-            }
-
-            var idx = ibase - pos * sz;
-
-            data[pos] |= mask << idx;
-        }
+        result.set(idx, mask);
+        idx += mask.length;
     }
 
-    return new BitSet(data.length, data);
+    return result;
 }
