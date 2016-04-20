@@ -394,6 +394,20 @@
             return other.contains(x);
         }, "verify that longer other contains x");
 
+        verifyThatBitSetCorrect(undefined, [1, 0, 0, 0], true, function(x) {
+            var shifted = x.shiftLeft(16);
+            var data = [0, 1, 0, 0, 0];
+            return data.length === shifted._data.length
+                && shifted._data.every(function(a, i) { return a === data[i]; });
+        }, "verify that shifts just over size boundaries are correct and without signage");
+
+        verifyThatBitSetCorrect(undefined, [1, 0, 0, 0], true, function(x) {
+            var shifted = x.shiftLeft(15);
+            var data = [32768, 0, 0, 0, 0];
+            return data.length === shifted._data.length
+                && shifted._data.every(function(a, i) { return a === data[i]; });
+        }, "verify that shifts just within size boundaries are correct and without signage");
+
     </script>
 
 </body>
