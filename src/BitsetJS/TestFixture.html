@@ -104,8 +104,8 @@
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             x.grow(1043);
-            return x._data.length === 33;
-        }, "verify bitset grew to 1043 bits or 33 data length");
+            return x._data.length === 66;
+        }, "verify bitset grew to 1043 bits or 66 data length");
 
         verifyThatBitSetCorrect(undefined, undefined, true, function(x) {
             x.set(27);
@@ -158,23 +158,15 @@
                 // [0]
                 true, true, true, false, false, false, false, false,
                 false, false, false, false, false, false, false, false,
-                false, false, false, false, false, false, false, false,
-                false, false, false, false, false, false, false, false,
                 // [1]
                 true, false, false, false, false, false, false, false,
-                false, false, false, false, false, false, false, false,
-                false, false, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false,
                 // [2]
                 false, true, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false,
-                false, false, false, false, false, false, false, false,
-                false, false, false, false, false, false, false, false,
                 // [3]
                 true, true, false, false, false, false, false, false,
                 false, false, false, false, false, false, false, false,
-                false, false, false, false, false, false, false, false,
-                false, false, false, false, false, false, false, false
             ];
             return arr.length === (x._data.length * x._sz)
                 && arr.every(function(a, i) { return a === expected[i]; });
@@ -183,14 +175,10 @@
         verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
             var arr = x.toByteArray();
             var expected = [
-                // [0]
-                7, 0, 0, 0,
-                // [1]
-                1, 0, 0, 0,
-                // [2]
-                2, 0, 0, 0,
-                // [3]
-                3, 0, 0, 0
+                // [0-1]
+                7, 0, 1, 0,
+                // [2-3]
+                2, 0, 3, 0
             ];
             return arr.length === expected.length
                 && arr.every(function(a, i) { return a === expected[i]; });
@@ -198,7 +186,7 @@
 
         verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
             var actual = x.toHexString();
-            var expected = "00000003000000020000000100000007";
+            var expected = "0003000200010007";
             return actual === expected;
         }, "verifies BitSet.toHexString");
 
@@ -226,14 +214,10 @@
             var shifted = x.shiftLeft(1, false);
             var arr = shifted.toByteArray();
             var expected = [
-                // [0]
-                14, 0, 0, 0,
-                // [1]
-                2, 0, 0, 0,
-                // [2]
-                4, 0, 0, 0,
-                // [3]
-                6, 0, 0, 0
+                // [0-1]
+                14, 0, 2, 0,
+                // [2-3]
+                4, 0, 6, 0
             ];
             return arr.length === expected.length
                 && arr.every(function(a, i) { return a === expected[i]; });
@@ -243,50 +227,38 @@
             var shifted = x.shiftLeft(3, false);
             var arr = shifted.toByteArray();
             var expected = [
-                // [0]
-                56, 0, 0, 0,
-                // [1]
-                8, 0, 0, 0,
-                // [2]
-                16, 0, 0, 0,
-                // [3]
-                24, 0, 0, 0
+                // [0-1]
+                56, 0, 8, 0,
+                // [2-3]
+                16, 0, 24, 0
             ];
             return arr.length === expected.length
                 && arr.every(function(a, i) { return a === expected[i]; });
         }, "verifies left shifted bits by 3 position(s) with no overflow");
 
         verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
-            var shifted = x.shiftLeft(16, false);
+            var shifted = x.shiftLeft(12, false);
             var arr = shifted.toByteArray();
             var expected = [
-                // [0]
-                0, 0, 7, 0,
-                // [1]
-                0, 0, 1, 0,
-                // [2]
-                0, 0, 2, 0,
-                // [3]
-                0, 0, 3, 0
+                // [0-1]
+                0, 112, 0, 16,
+                // [2-3]
+                0, 32, 0, 48
             ];
             return arr.length === expected.length
                 && arr.every(function(a, i) { return a === expected[i]; });
-        }, "verifies left shifted bits by 16 position(s) with no overflow");
+        }, "verifies left shifted bits by 12 position(s) with no overflow");
 
         verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
             var shifted = x.shiftLeft(16, true);
             var arr = shifted.toByteArray();
             var expected = [
-                // [0]
+                // [0-1]
                 0, 0, 7, 0,
-                // [1]
-                0, 0, 1, 0,
-                // [2]
-                0, 0, 2, 0,
-                // [3]
-                0, 0, 3, 0,
+                // [2-3]
+                1, 0, 2, 0,
                 // [4]
-                0, 0, 0, 0
+                3, 0
             ];
             return arr.length === expected.length
                 && arr.every(function(a, i) { return a === expected[i]; });
@@ -296,14 +268,10 @@
             var shifted = x.shiftLeft(1, false).shiftRight(1, false);
             var arr = shifted.toByteArray();
             var expected = [
-                // [0]
-                7, 0, 0, 0,
-                // [1]
-                1, 0, 0, 0,
-                // [2]
-                2, 0, 0, 0,
-                // [3]
-                3, 0, 0, 0
+                // [0-1]
+                7, 0, 1, 0,
+                // [2-3]
+                2, 0, 3, 0
             ];
             return arr.length === expected.length
                 && arr.every(function(a, i) { return a === expected[i]; });
@@ -313,14 +281,10 @@
             var shifted = x.shiftLeft(3, false).shiftRight(3, false);
             var arr = shifted.toByteArray();
             var expected = [
-                // [0]
-                7, 0, 0, 0,
-                // [1]
-                1, 0, 0, 0,
-                // [2]
-                2, 0, 0, 0,
-                // [3]
-                3, 0, 0, 0
+                // [0-1]
+                7, 0, 1, 0,
+                // [2-3]
+                2, 0, 3, 0
             ];
             return arr.length === expected.length
                 && arr.every(function(a, i) { return a === expected[i]; });
@@ -330,14 +294,10 @@
             var shifted = x.shiftLeft(6, false).shiftRight(3, false);
             var arr = shifted.toByteArray();
             var expected = [
-                // [0]
-                56, 0, 0, 0,
-                // [1]
-                8, 0, 0, 0,
-                // [2]
-                16, 0, 0, 0,
-                // [3]
-                24, 0, 0, 0
+                // [0-1]
+                56, 0, 8, 0,
+                // [2-3]
+                16, 0, 24, 0
             ];
             return arr.length === expected.length
                 && arr.every(function(a, i) { return a === expected[i]; });
@@ -348,18 +308,14 @@
             var right = left.shiftRight(33, false);
             var arr = right.toByteArray();
             var expected = [
-                // [0]
-                56, 0, 0, 0,
-                // [1]
-                8, 0, 0, 0,
-                // [2]
-                16, 0, 0, 0,
-                // [3]
-                24, 0, 0, 0,
-                // [4]
+                // [0-1]
+                56, 0, 8, 0,
+                // [2-3]
+                16, 0, 24, 0,
+                // [4-5]
                 0, 0, 0, 0,
-                // [5]
-                0, 0, 0, 0
+                // [6]
+                0, 0
             ];
             return arr.length === expected.length
                 && arr.every(function(a, i) { return a === expected[i]; });
@@ -370,14 +326,10 @@
             var right = left.shiftRight(33);
             var arr = right.toByteArray();
             var expected = [
-                // [0]
-                56, 0, 0, 0,
-                // [1]
-                8, 0, 0, 0,
-                // [2]
-                16, 0, 0, 0,
-                // [3]
-                24, 0, 0, 0
+                // [0-1]
+                56, 0, 8, 0,
+                // [2-3]
+                16, 0, 24, 0
             ];
             return arr.length === expected.length
                 && arr.every(function(a, i) { return a === expected[i]; });
@@ -388,13 +340,9 @@
             var right = left.shiftRight(32, false);
             var arr = right.toByteArray();
             var expected = [
-                // [0]
-                7, 0, 0, 0,
-                // [1]
-                1, 0, 0, 0,
-                // [2]
-                2, 0, 0, 0,
-                // [3]
+                // [0-1]
+                7, 0, 1, 0,
+                // [2-3]
                 0, 0, 0, 0
             ];
             return arr.length === expected.length
@@ -414,18 +362,15 @@
         verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
             /* remember we are testing 32 bits per item binary (base 2) */
             var from = BitSet.fromString(
-                "00000000000000000000000000000011"
-                + "00000000000000000000000000000010"
-                + "00000000000000000000000000000001"
-                + "00000000000000000000000000000111");
+                "0000000000000011" + "0000000000000010"
+                + "0000000000000001" + "0000000000000111");
             return from.equals(x);
         }, "verify binary from string result");
 
         verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
             /* remember we are testing 32 bits per item hex (base 16) */
             var from = BitSet.fromString(
-                "00000003" + "00000002"
-                + "00000001" + "00000007", 16);
+                "0003" + "0002" + "0001" + "0007", 16);
             return from.equals(x);
         }, "verify hex from string result");
 

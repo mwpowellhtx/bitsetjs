@@ -377,8 +377,13 @@ var BitSet = function (l, d) {
 if (BitSet.getBitsPerPos === undefined) {
     /* this needs to be a factory function because even a standing
     "constant" is considered a mutable reference to JS */
-    BitSet.getBitsPerPos = function() {
-        return 32;
+    BitSet.getBitsPerPos = function () {
+
+        /* avoid potential negative number signage issues by avoiding this one altogether;
+        TODO: TBD: may be able to extend this to the next byte boundary (i.e. 24) and be alright for it,
+        but for now it is tested and basically proven */
+
+        return 16;
     }
 }
 
