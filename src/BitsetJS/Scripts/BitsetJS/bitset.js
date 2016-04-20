@@ -328,6 +328,32 @@ var BitSet = function (l, d) {
         return true;
     }
 
+    this.contains = function(other) {
+
+        /* ReSharper disable once DeclarationHides */
+        var d = this._data;
+
+        var min = Math.min(d.length * this._sz,
+            other._data.length * other._sz);
+
+        for (var i = 0; i < min; i++) {
+            /* only that we have a superset, i.e. this contains other */
+            if (other.test(i) && !this.test(i)) {
+                return false;
+            }
+        }
+
+        /* if we are iterating this one it means that other is longer */
+        for (var j = min; j < other._data.length * other._sz; j++) {
+            /* and if any of the other bits test then cannot be contained */
+            if (other.test(j)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     this.bitCount = function() {
         /* TODO: TBD: so far, to the nearest "word" boundary; may make sense to introduce an actual _length, which could fall within the data. */
         return this._data.length * this._sz;

@@ -39,7 +39,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="TestFixture.html" />
-    <None Include="Kingdom.BitsetJS.nuspec" />
+    <None Include="Kingdom.BitsetJS.nuspec">
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="Scripts\BitsetJS\bitset.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

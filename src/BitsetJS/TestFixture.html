@@ -429,6 +429,26 @@
             return from.equals(x);
         }, "verify hex from string result");
 
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var other = new BitSet(undefined, [3, 1, 2, 1]);
+            return x.contains(other);
+        }, "verify that x contains other");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var other = new BitSet(undefined, [3, 1, 2, 1]);
+            return !other.contains(x);
+        }, "verify that other does not contain x");
+
+        verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
+            var other = new BitSet(undefined, [3, 1, 2, 1, 2]);
+            return !x.contains(other);
+        }, "verify that x does not contain longer other");
+
+        verifyThatBitSetCorrect(undefined, [3, 1, 2, 1], true, function(x) {
+            var other = new BitSet(undefined, [7, 1, 2, 3, 2]);
+            return other.contains(x);
+        }, "verify that longer other contains x");
+
     </script>
 
 </body>
