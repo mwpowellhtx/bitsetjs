@@ -19,6 +19,7 @@ I believe I accomplished immutability but with a couple of interesting language 
 * So for things like default values, I must use factory methods and return the interesting details.
 * Also, any data or lengths and such contributing to new instances must be serialized and deserialized via [JSON.stringify](http://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) followed by [JSON.parse](http://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse). Not the most graceful solution, but probably the best we can do.
 * I also avoided using [Int32Array](http://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array), per se, in favor of JSON [arrays](http://www.w3schools.com/json/json_syntax.asp). These are simple enough and are easy to construct and work with.
+* I encountered an issue at sign bit boundaries which yielded negative numbers that should not be there. To avoid this I dialed back the size for each element from 32 to 16. This works, but with the trade off of *doubling* the size of the internally maintained ``data`` array. I may be able to get away with extending that range a bit by pushing the boundary to the next byte, or 24 bits, instead of 16, but have not explored that much yet, and I want to avoid the math for odd numbered boundaries.
 
 ## Features
 
