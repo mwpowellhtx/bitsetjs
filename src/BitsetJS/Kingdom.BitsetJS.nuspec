@@ -3,7 +3,7 @@
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <id>Kingdom.BitsetJS</id>
     <title>Kingdom.BitsetJS</title>
-    <version>1.6.2</version>
+    <version>1.6.3</version>
     <authors>Michael W. Powell</authors>
     <owners>mwpowellhtx</owners>
     <licenseUrl>http://github.com/mwpowellhtx/Kingdom.BitsetJS/raw/master/LICENSE.txt</licenseUrl>
@@ -17,7 +17,7 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Scripts\BitsetJS\bitset.js" target="Content\Scripts\BitSetJS\bitset-1.6.2.js" />
+    <file src="bin\Scripts\BitsetJS\bitset.js" target="Content\Scripts\BitSetJS\bitset-1.6.3.js" />
     <file src="bin\Tools\*.ps1" target="tools" />
   </files>
 </package>

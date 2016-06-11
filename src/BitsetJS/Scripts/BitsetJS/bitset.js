@@ -209,9 +209,12 @@ var BitSet = function (l, d) {
         var reduced = args.reduceArgs(
             function(g, x) {
                 if (x instanceof BitSet) {
-                    return g.concat([x]);
+                    return g.concat([x._data]);
                 } else if (Array.isArray(x)) {
-                    return g.concat(x);
+                    return g.concat(x.reduce(
+                        function(g, y) {
+                            return y._data;
+                        }));
                 }
                 return g;
             },
@@ -222,39 +225,39 @@ var BitSet = function (l, d) {
     this.and = function() {
         var flattened = this._flattenData(arguments);
         return calculateBitwise(flattened,
-            function(bits) {
-                var result = null;
-                for (var i = 0; i < bits.length; i++) {
-                    var bit = bits[i];
-                    result = result === null ? bit : result & bit;
-                }
-                return result;
+            function(crossed) {
+                return crossed.reduce(
+                        function(g, x) {
+                            return g === null ? x : g & x;
+                        },
+                        null) ||
+                    0;
             });
     }
 
     this.or = function() {
         var flattened = this._flattenData(arguments);
         return calculateBitwise(flattened,
-            function(bits) {
-                var result = null;
-                for (var i = 0; i < bits.length; i++) {
-                    var bit = bits[i];
-                    result = result === null ? bit : result | bit;
-                }
-                return result;
+            function(crossed) {
+                return crossed.reduce(
+                        function(g, x) {
+                            return g === null ? x : g | x;
+                        },
+                        null) ||
+                    0;
             });
     }
 
     this.xor = function() {
         var flattened = this._flattenData(arguments);
         return calculateBitwise(flattened,
-            function(bits) {
-                var result = null;
-                for (var i = 0; i < bits.length; i++) {
-                    var bit = bits[i];
-                    result = result === null ? bit : result ^ bit;
-                }
-                return result;
+            function(crossed) {
+                return crossed.reduce(
+                        function(g, x) {
+                            return g === null ? x : g ^ x;
+                        },
+                        null) ||
+                    0;
             });
     }
 
