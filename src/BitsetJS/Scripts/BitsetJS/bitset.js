@@ -183,34 +183,79 @@ var BitSet = function (l, d) {
         return result;
     }
 
-    var calc = function(a, b, f) {
-        /* ReSharper disable once DeclarationHides */
-        var d = a._data;
-        var result = new BitSet(d.length, d);
-        var max = Math.max(d.length, b._data.length);
-        result.grow(max);
-        for (var i = 0; i < max; i++) {
-            result._data[i] = f(result._data[i], b._data[i]);
+    var calculateBitwise = function(arrs, func) {
+        var length = arrs.reduce(function(g, x) {
+                return Math.max(x.length, g);
+            },
+            0);
+        var data = [];
+        for (var i = 0; i < length; i++) {
+            var reduced = arrs.reduce(function(g, x) {
+                return g.concat([
+                    /* ReSharper disable once ClosureOnModifiedVariable */
+                    i < x.length
+                    /* ReSharper disable once ClosureOnModifiedVariable */
+                    ? x[i]
+                    : 0
+                ]);
+            },
+            []);
+            data.push(func(reduced));
         }
-        return result;
+        return new BitSet(data.length, data);
     }
 
-    this.and = function(other) {
-        return calc(this, other, function(a, b) {
-            return a & b;
-        });
+    var flatten = function(data, args) {
+        var reduced = args.reduce(
+            function(g, x) {
+                if (x instanceof BitSet) {
+                    return g.concat([x]);
+                } else if (Array.isArray(x)) {
+                    return g.concat(x);
+                }
+                return g;
+            },
+            []);
+        return [data].concat(reduced);
     }
 
-    this.or = function(other) {
-        return calc(this, other, function(a, b) {
-            return a | b;
-        });
+    this.and = function() {
+        var flattened = flatten(this._data, arguments);
+        return calculateBitwise(flattened,
+            function(bits) {
+                var result = null;
+                for (var i = 0; i < bits.length; i++) {
+                    var bit = bits[i];
+                    result = result === null ? bit : result & bit;
+                }
+                return result;
+            });
     }
 
-    this.xor = function(other) {
-        return calc(this, other, function(a, b) {
-            return a ^ b;
-        });
+    this.or = function() {
+        var flattened = flatten(this._data, arguments);
+        return calculateBitwise(flattened,
+            function(bits) {
+                var result = null;
+                for (var i = 0; i < bits.length; i++) {
+                    var bit = bits[i];
+                    result = result === null ? bit : result | bit;
+                }
+                return result;
+            });
+    }
+
+    this.xor = function() {
+        var flattened = flatten(this._data, arguments);
+        return calculateBitwise(flattened,
+            function(bits) {
+                var result = null;
+                for (var i = 0; i < bits.length; i++) {
+                    var bit = bits[i];
+                    result = result === null ? bit : result ^ bit;
+                }
+                return result;
+            });
     }
 
     this.shiftLeft = function(n, allowOverflow) {

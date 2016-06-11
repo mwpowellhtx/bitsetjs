@@ -131,26 +131,44 @@
             return !x.equals(not);
         }, "verifies that not is immutable");
 
-        verifyThatBitSetCorrect(undefined, [1, 0, 0, 0], true, function(x) {
-            var other = new BitSet(undefined, [2, 0, 0, 0]);
-            var actual = x.and(other);
-            var expected = new BitSet(undefined, [0, 0, 0, 0]);
-            return !(actual.equals(x) || other.equals(x)) && actual.equals(expected);
-        }, "verifies that BitSet.prototype.and is immutable");
+        verifyThatBitSetCorrect(undefined,
+            [1, 0, 0, 0],
+            true,
+            function(x) {
+                var a = new BitSet(undefined, [2, 0, 0, 0]);
+                var b = new BitSet(undefined, [4, 0, 0, 0]);
+                var c = new BitSet(undefined, [8, 0, 0, 0]);
+                var actual = x.and(a, b, c);
+                var expected = new BitSet(undefined, [0, 0, 0, 0]);
+                return !(actual.equals(x) || a.equals(x) || b.equals(x) || c.equals(x)) && actual.equals(expected);
+            },
+            "verifies that BitSet.prototype.and is immutable");
 
-        verifyThatBitSetCorrect(undefined, [1, 0, 0, 0], true, function(x) {
-            var other = new BitSet(undefined, [2, 0, 0, 0]);
-            var actual = x.or(other);
-            var expected = new BitSet(undefined, [3, 0, 0, 0]);
-            return !(actual.equals(x) || other.equals(x)) && actual.equals(expected);
-        }, "verifies that BitSet.prototype.or is immutable");
+        verifyThatBitSetCorrect(undefined,
+            [1, 0, 0, 0],
+            true,
+            function(x) {
+                var a = new BitSet(undefined, [2, 0, 0, 0]);
+                var b = new BitSet(undefined, [4, 0, 0, 0]);
+                var c = new BitSet(undefined, [8, 0, 0, 0]);
+                var actual = x.or(a, b, c);
+                var expected = new BitSet(undefined, [15, 0, 0, 0]);
+                return !(actual.equals(x) || a.equals(x) || b.equals(x) || c.equals(x)) && actual.equals(expected);
+            },
+            "verifies that BitSet.prototype.or is immutable");
 
-        verifyThatBitSetCorrect(undefined, [12, 0, 0, 0], true, function(x) {
-            var other = new BitSet(undefined, [34, 0, 0, 0]);
-            var actual = x.xor(other);
-            var expected = new BitSet(undefined, [46, 0, 0, 0]);
-            return !(actual.equals(x) || other.equals(x)) && actual.equals(expected);
-        }, "verifies that BitSet.prototype.xor is immutable");
+        verifyThatBitSetCorrect(undefined,
+            [12, 0, 0, 0],
+            true,
+            function(x) {
+                var a = new BitSet(undefined, [34, 0, 0, 0]);
+                var b = new BitSet(undefined, [56, 0, 0, 0]);
+                var c = new BitSet(undefined, [78, 0, 0, 0]);
+                var actual = x.xor(a, b, c);
+                var expected = new BitSet(undefined, [88, 0, 0, 0]);
+                return !(actual.equals(x) || a.equals(x) || b.equals(x) || c.equals(x)) && actual.equals(expected);
+            },
+            "verifies that BitSet.prototype.xor is immutable");
 
         verifyThatBitSetCorrect(undefined, [7, 1, 2, 3], true, function(x) {
             var arr = x.toBooleanArray();
