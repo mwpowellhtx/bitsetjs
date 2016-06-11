@@ -205,8 +205,8 @@ var BitSet = function (l, d) {
         return new BitSet(data.length, data);
     }
 
-    var flatten = function(data, args) {
-        var reduced = args.reduce(
+    this._flattenData = function(args) {
+        var reduced = args.reduceArgs(
             function(g, x) {
                 if (x instanceof BitSet) {
                     return g.concat([x]);
@@ -216,11 +216,11 @@ var BitSet = function (l, d) {
                 return g;
             },
             []);
-        return [data].concat(reduced);
+        return [this._data].concat(reduced);
     }
 
     this.and = function() {
-        var flattened = flatten(this._data, arguments);
+        var flattened = this._flattenData(arguments);
         return calculateBitwise(flattened,
             function(bits) {
                 var result = null;
@@ -233,7 +233,7 @@ var BitSet = function (l, d) {
     }
 
     this.or = function() {
-        var flattened = flatten(this._data, arguments);
+        var flattened = this._flattenData(arguments);
         return calculateBitwise(flattened,
             function(bits) {
                 var result = null;
@@ -246,7 +246,7 @@ var BitSet = function (l, d) {
     }
 
     this.xor = function() {
-        var flattened = flatten(this._data, arguments);
+        var flattened = this._flattenData(arguments);
         return calculateBitwise(flattened,
             function(bits) {
                 var result = null;
@@ -378,20 +378,19 @@ var BitSet = function (l, d) {
         /* ReSharper disable once DeclarationHides */
         var d = this._data;
 
-        var min = Math.min(d.length * this._sz,
-            other._data.length * other._sz);
+        var min2 = Math.min(d.length, other._data.length);
 
-        for (var i = 0; i < min; i++) {
-            /* only that we have a superset, i.e. this contains other */
-            if (other.test(i) && !this.test(i)) {
+        /* short circuit when the other data has any values whatsoever beyond this data length. */
+        for (var i = min2; i < other._data.length; i++) {
+            if (other._data[i]) {
                 return false;
             }
         }
 
         /* if we are iterating this one it means that other is longer */
-        for (var j = min; j < other._data.length * other._sz; j++) {
+        for (var i = 0; i < min2; i++) {
             /* and if any of the other bits test then cannot be contained */
-            if (other.test(j)) {
+            if ((d[i] & other._data[i]) !== other._data[i]) {
                 return false;
             }
         }
