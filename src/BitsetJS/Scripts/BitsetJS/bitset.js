@@ -206,17 +206,20 @@ var BitSet = function (l, d) {
     }
 
     this._getDataView = function(args) {
-        var result = [this._data];
-        args.reduceArgs(
+        /* this does a far better job gathering the necessary bits */
+        var result = args.reduceArgs(
             function(g, x) {
                 if (x instanceof BitSet) {
-                    result.push(x._data);
+                    g.push(x._data);
+                    return g;
                 } else if (Array.isArray(x)) {
                     x.reduce(function(h, y) {
-                        result.push(y._data);
-                    });
+                        h.push(y._data);
+                        return h;
+                    }, g);
                 }
-            });
+                return g;
+            }, [this._data]);
         return result;
     }
 
@@ -261,7 +264,8 @@ var BitSet = function (l, d) {
 
     this.shiftLeft = function(n, allowOverflow) {
 
-        n = Math.abs(n || 1);
+        /* we were never that happy with this approach, zero should be default */
+        n = n === undefined ? 0 : Math.abs(n);
         allowOverflow = typeof allowOverflow !== "boolean" ? true : allowOverflow;
 
         var result = new BitSet(this._data.length, this._data);
@@ -286,7 +290,8 @@ var BitSet = function (l, d) {
 
     this.shiftRight = function(n, canShrink) {
 
-        n = Math.abs(n || 1);
+        /* we were never that happy with this approach, zero should be default */
+        n = n === undefined ? 0 : Math.abs(n);
         canShrink = typeof canShrink !== "boolean" ? true : canShrink;
 
         var result = new BitSet(this._data.length, this._data);
