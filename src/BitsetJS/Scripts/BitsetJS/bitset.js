@@ -205,25 +205,23 @@ var BitSet = function (l, d) {
         return new BitSet(data.length, data);
     }
 
-    this._flattenData = function(args) {
-        var reduced = args.reduceArgs(
+    this._getDataView = function(args) {
+        var result = [this._data];
+        args.reduceArgs(
             function(g, x) {
                 if (x instanceof BitSet) {
-                    return g.concat([x._data]);
+                    result.push(x._data);
                 } else if (Array.isArray(x)) {
-                    return g.concat(x.reduce(
-                        function(g, y) {
-                            return y._data;
-                        }));
+                    x.reduce(function(h, y) {
+                        result.push(y._data);
+                    });
                 }
-                return g;
-            },
-            []);
-        return [this._data].concat(reduced);
+            });
+        return result;
     }
 
     this.and = function() {
-        var flattened = this._flattenData(arguments);
+        var flattened = this._getDataView(arguments);
         return calculateBitwise(flattened,
             function(crossed) {
                 return crossed.reduce(
@@ -236,7 +234,7 @@ var BitSet = function (l, d) {
     }
 
     this.or = function() {
-        var flattened = this._flattenData(arguments);
+        var flattened = this._getDataView(arguments);
         return calculateBitwise(flattened,
             function(crossed) {
                 return crossed.reduce(
@@ -249,7 +247,7 @@ var BitSet = function (l, d) {
     }
 
     this.xor = function() {
-        var flattened = this._flattenData(arguments);
+        var flattened = this._getDataView(arguments);
         return calculateBitwise(flattened,
             function(crossed) {
                 return crossed.reduce(
